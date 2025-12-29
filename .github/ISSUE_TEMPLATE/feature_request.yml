@@ -1,0 +1,59 @@
+name: Feature Request
+description: Suggest a new feature for secure-role-guard
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please describe what you'd like to see.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Description
+      description: What problem would this feature solve?
+      placeholder: I'm frustrated when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like
+      placeholder: I would like to be able to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions?
+      placeholder: I've also thought about...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Affected Module
+      description: Which part of the package would this affect?
+      options:
+        - Core (defineRoles, canUser)
+        - React (PermissionProvider, hooks, components)
+        - New adapter
+        - TypeScript types
+        - Documentation
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: considerations
+    attributes:
+      label: Security Considerations
+      description: For a security library, we need to consider impact carefully
+      options:
+        - label: This feature does NOT affect permission checking logic
+        - label: This feature is additive (does not change existing behavior)
+        - label: I have considered security implications

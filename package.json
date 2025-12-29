@@ -1,6 +1,6 @@
 {
   "name": "secure-role-guard",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Zero-vulnerability, framework-agnostic RBAC authorization library for React applications",
   "author": "Sohel Rahaman",
   "license": "MIT",

@@ -42,7 +42,8 @@
     "enterprise",
     "saas",
     "multi-tenant",
-    "dynamic-roles"
+    "dynamic-roles",
+    "secure-role-guard"
   ],
   "repository": {
     "type": "git",

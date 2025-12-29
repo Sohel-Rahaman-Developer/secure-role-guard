@@ -1,6 +1,6 @@
 {
   "name": "secure-role-guard",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Zero-dependency RBAC authorization library for React & Node.js. Role-based access control with permissions, middleware for Express/Next.js. Define roles once, use everywhere.",
   "author": "Sohel Rahaman",
   "license": "MIT",

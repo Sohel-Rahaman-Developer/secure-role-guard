@@ -21,11 +21,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/sohelrahaman/secure-role-guard.git"
+    "url": "git+https://github.com/Sohel-Rahaman-Developer/secure-role-guard.git"
   },
-  "homepage": "https://github.com/sohelrahaman/secure-role-guard#readme",
+  "homepage": "https://github.com/Sohel-Rahaman-Developer/secure-role-guard#readme",
   "bugs": {
-    "url": "https://github.com/sohelrahaman/secure-role-guard/issues"
+    "url": "https://github.com/Sohel-Rahaman-Developer/secure-role-guard/issues"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -33,34 +33,34 @@
   "sideEffects": false,
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     },
     "./core": {
+      "types": "./dist/core/index.d.ts",
       "import": "./dist/core/index.mjs",
-      "require": "./dist/core/index.js",
-      "types": "./dist/core/index.d.ts"
+      "require": "./dist/core/index.js"
     },
     "./react": {
+      "types": "./dist/react/index.d.ts",
       "import": "./dist/react/index.mjs",
-      "require": "./dist/react/index.js",
-      "types": "./dist/react/index.d.ts"
+      "require": "./dist/react/index.js"
     },
     "./adapters": {
+      "types": "./dist/adapters/index.d.ts",
       "import": "./dist/adapters/index.mjs",
-      "require": "./dist/adapters/index.js",
-      "types": "./dist/adapters/index.d.ts"
+      "require": "./dist/adapters/index.js"
     },
     "./adapters/express": {
+      "types": "./dist/adapters/express.d.ts",
       "import": "./dist/adapters/express.mjs",
-      "require": "./dist/adapters/express.js",
-      "types": "./dist/adapters/express.d.ts"
+      "require": "./dist/adapters/express.js"
     },
     "./adapters/nextjs": {
+      "types": "./dist/adapters/nextjs.d.ts",
       "import": "./dist/adapters/nextjs.mjs",
-      "require": "./dist/adapters/nextjs.js",
-      "types": "./dist/adapters/nextjs.d.ts"
+      "require": "./dist/adapters/nextjs.js"
     }
   },
   "files": [

@@ -21,6 +21,7 @@
 - [API Reference](#api-reference)
 - [Real-World Examples](#real-world-examples)
 - [Framework Compatibility](#framework-compatibility)
+- [Fixed Roles vs Dynamic Roles](#fixed-roles-vs-dynamic-roles)
 - [Common Mistakes to Avoid](#common-mistakes-to-avoid)
 - [License](#license)
 
@@ -607,6 +608,621 @@ if (tenantId) {
 | Express.js             | ✅ Full support  | `secure-role-guard/adapters/express` |
 | Fastify                | 🔧 Adapter-ready | Use core directly                    |
 | Node HTTP              | ✅ Full support  | `secure-role-guard/core`             |
+
+---
+
+## Fixed Roles vs Dynamic Roles
+
+This package supports both **Fixed (Hardcoded) Roles** and **Dynamic (Database-driven) Roles**. Choose the approach that fits your application.
+
+### Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        YOUR APPLICATION                                  │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│   OPTION A: Fixed Roles              OPTION B: Dynamic Roles            │
+│   ┌───────────────────┐              ┌───────────────────┐              │
+│   │  roles.ts file    │              │  Database         │              │
+│   │  (hardcoded)      │              │  (MongoDB/PG/SQL) │              │
+│   └─────────┬─────────┘              └─────────┬─────────┘              │
+│             │                                  │                         │
+│             ▼                                  ▼                         │
+│   ┌───────────────────┐              ┌───────────────────┐              │
+│   │  defineRoles()    │              │  loadRolesFromDB()│              │
+│   │  (at build time)  │              │  (at runtime)     │              │
+│   └─────────┬─────────┘              └─────────┬─────────┘              │
+│             │                                  │                         │
+│             └──────────────┬───────────────────┘                         │
+│                            ▼                                             │
+│             ┌───────────────────────────────────┐                        │
+│             │       secure-role-guard           │                        │
+│             │  (same API for both approaches)   │                        │
+│             └───────────────────────────────────┘                        │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Approach 1: Fixed Roles (Hardcoded)
+
+Best for applications with **predefined, unchanging roles**.
+
+#### When to Use Fixed Roles
+
+- ✅ Small to medium applications
+- ✅ Roles rarely change
+- ✅ Simple admin/user/viewer hierarchy
+- ✅ You want faster startup (no DB query needed)
+
+#### Frontend Example (React/Next.js)
+
+```typescript
+// lib/roles.ts - Define roles at build time
+import { defineRoles } from "secure-role-guard";
+
+export const roleRegistry = defineRoles({
+  superadmin: ["*"], // Full access
+  admin: ["user.read", "user.create", "user.update", "user.delete", "report.*"],
+  manager: ["user.read", "user.update", "report.view"],
+  support: ["ticket.read", "ticket.reply", "user.read"],
+  viewer: ["user.read", "report.view"],
+});
+
+// -------------------------------------------------------
+// app/providers.tsx - Setup Provider
+("use client");
+
+import { PermissionProvider } from "secure-role-guard/react";
+import { roleRegistry } from "@/lib/roles";
+
+interface User {
+  id: string;
+  roles: string[];
+  permissions?: string[];
+}
+
+export function AuthProvider({
+  children,
+  user,
+}: {
+  children: React.ReactNode;
+  user: User | null;
+}) {
+  return (
+    <PermissionProvider user={user} registry={roleRegistry}>
+      {children}
+    </PermissionProvider>
+  );
+}
+
+// -------------------------------------------------------
+// components/Dashboard.tsx - Use Permissions
+import { Can, useCan } from "secure-role-guard/react";
+
+export function Dashboard() {
+  const canManageUsers = useCan("user.update");
+
+  return (
+    <div>
+      <h1>Dashboard</h1>
+
+      {/* Declarative approach */}
+      <Can permission="user.create">
+        <button>Add New User</button>
+      </Can>
+
+      <Can permission="report.view">
+        <ReportsSection />
+      </Can>
+
+      <Can permissions={["user.delete", "user.update"]} anyOf>
+        <UserManagement />
+      </Can>
+
+      {/* Programmatic approach */}
+      {canManageUsers && <EditUserButton />}
+    </div>
+  );
+}
+```
+
+#### Backend Example (Express/Fastify)
+
+```typescript
+// server.ts - Express with Fixed Roles
+import express from "express";
+import { defineRoles, canUser } from "secure-role-guard/core";
+import { requirePermission } from "secure-role-guard/adapters/express";
+
+const app = express();
+
+// Same role definitions as frontend
+const roleRegistry = defineRoles({
+  superadmin: ["*"],
+  admin: ["user.read", "user.create", "user.update", "user.delete"],
+  manager: ["user.read", "user.update"],
+  viewer: ["user.read"],
+});
+
+// YOUR auth middleware (this package doesn't do auth)
+app.use(yourAuthMiddleware); // Sets req.user
+
+// Protected routes with middleware
+app.get(
+  "/api/users",
+  requirePermission("user.read", roleRegistry),
+  async (req, res) => {
+    const users = await db.users.findAll();
+    res.json(users);
+  }
+);
+
+app.post(
+  "/api/users",
+  requirePermission("user.create", roleRegistry),
+  async (req, res) => {
+    const user = await db.users.create(req.body);
+    res.json(user);
+  }
+);
+
+// Manual permission check (for complex logic)
+app.put("/api/users/:id", async (req, res) => {
+  const user = req.user;
+
+  if (!canUser(user, "user.update", roleRegistry)) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
+  // Additional business logic
+  const targetUser = await db.users.findById(req.params.id);
+
+  // Example: Managers can only edit non-admin users
+  if (
+    targetUser.roles.includes("admin") &&
+    !canUser(user, "admin.manage", roleRegistry)
+  ) {
+    return res.status(403).json({ error: "Cannot edit admin users" });
+  }
+
+  const updated = await db.users.update(req.params.id, req.body);
+  res.json(updated);
+});
+
+app.listen(3000);
+```
+
+---
+
+### Approach 2: Dynamic Roles (Database-Driven)
+
+Best for applications where **admin can create/modify roles at runtime**.
+
+#### When to Use Dynamic Roles
+
+- ✅ Enterprise SaaS applications
+- ✅ Admin should create custom roles (e.g., "HR Manager", "Finance Lead")
+- ✅ Roles change frequently
+- ✅ Multi-tenant with different roles per tenant
+
+#### Database Schema Examples
+
+**MongoDB:**
+
+```javascript
+// roles collection
+{
+  _id: ObjectId("..."),
+  name: "hr_manager",
+  display_name: "HR Manager",
+  permissions: ["employee.read", "employee.create", "employee.update", "leave.approve"],
+  is_active: true,
+  tenant_id: ObjectId("..."),  // For multi-tenant
+  created_at: ISODate("...")
+}
+
+// users collection
+{
+  _id: ObjectId("..."),
+  email: "john@example.com",
+  roles: [ObjectId("role1"), ObjectId("role2")],
+  direct_permissions: ["special.feature"],  // User-specific permissions
+  tenant_id: ObjectId("...")
+}
+```
+
+**PostgreSQL:**
+
+```sql
+-- roles table
+CREATE TABLE roles (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(50) UNIQUE NOT NULL,
+  display_name VARCHAR(100),
+  is_active BOOLEAN DEFAULT true,
+  tenant_id INTEGER REFERENCES tenants(id),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- permissions table
+CREATE TABLE permissions (
+  id SERIAL PRIMARY KEY,
+  code VARCHAR(100) UNIQUE NOT NULL,  -- e.g., 'user.read'
+  description TEXT
+);
+
+-- role_permissions (many-to-many)
+CREATE TABLE role_permissions (
+  role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE,
+  permission_id INTEGER REFERENCES permissions(id) ON DELETE CASCADE,
+  PRIMARY KEY (role_id, permission_id)
+);
+
+-- user_roles (many-to-many)
+CREATE TABLE user_roles (
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE,
+  PRIMARY KEY (user_id, role_id)
+);
+
+-- user_permissions (direct permissions, bypass roles)
+CREATE TABLE user_permissions (
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  permission_id INTEGER REFERENCES permissions(id) ON DELETE CASCADE,
+  PRIMARY KEY (user_id, permission_id)
+);
+```
+
+**MySQL:**
+
+```sql
+-- Similar to PostgreSQL, with MySQL syntax
+CREATE TABLE roles (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) UNIQUE NOT NULL,
+  display_name VARCHAR(100),
+  is_active TINYINT(1) DEFAULT 1,
+  tenant_id INT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE permissions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  code VARCHAR(100) UNIQUE NOT NULL,
+  description TEXT
+);
+
+CREATE TABLE role_permissions (
+  role_id INT,
+  permission_id INT,
+  PRIMARY KEY (role_id, permission_id),
+  FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+  FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE
+);
+```
+
+#### Backend: Loading Dynamic Roles
+
+```typescript
+// lib/dynamic-roles.ts
+import { defineRoles, RoleRegistry } from "secure-role-guard/core";
+
+// Interface for database abstraction
+interface RoleFromDB {
+  name: string;
+  permissions: string[];
+}
+
+interface IRoleRepository {
+  getAllActiveRoles(): Promise<RoleFromDB[]>;
+}
+
+// ============================================================
+// MongoDB Implementation
+// ============================================================
+class MongoRoleRepository implements IRoleRepository {
+  async getAllActiveRoles(): Promise<RoleFromDB[]> {
+    const roles = await RoleModel.find({ is_active: true })
+      .populate("permissions")
+      .lean();
+
+    return roles.map((role) => ({
+      name: role.name,
+      permissions: role.permissions.map((p: any) => p.code),
+    }));
+  }
+}
+
+// ============================================================
+// PostgreSQL Implementation (using Prisma)
+// ============================================================
+class PostgresRoleRepository implements IRoleRepository {
+  async getAllActiveRoles(): Promise<RoleFromDB[]> {
+    const roles = await prisma.role.findMany({
+      where: { is_active: true },
+      include: {
+        role_permissions: {
+          include: { permission: true },
+        },
+      },
+    });
+
+    return roles.map((role) => ({
+      name: role.name,
+      permissions: role.role_permissions.map((rp) => rp.permission.code),
+    }));
+  }
+}
+
+// ============================================================
+// MySQL Implementation (using mysql2)
+// ============================================================
+class MySQLRoleRepository implements IRoleRepository {
+  async getAllActiveRoles(): Promise<RoleFromDB[]> {
+    const [rows] = await pool.query(`
+      SELECT r.name, GROUP_CONCAT(p.code) as permissions
+      FROM roles r
+      LEFT JOIN role_permissions rp ON r.id = rp.role_id
+      LEFT JOIN permissions p ON rp.permission_id = p.id
+      WHERE r.is_active = 1
+      GROUP BY r.id, r.name
+    `);
+
+    return (rows as any[]).map((row) => ({
+      name: row.name,
+      permissions: row.permissions ? row.permissions.split(",") : [],
+    }));
+  }
+}
+
+// ============================================================
+// Dynamic Role Registry Factory
+// ============================================================
+let cachedRegistry: RoleRegistry | null = null;
+let cacheExpiry = 0;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+export async function getDynamicRoleRegistry(
+  repository: IRoleRepository
+): Promise<RoleRegistry> {
+  const now = Date.now();
+
+  // Return cached if valid
+  if (cachedRegistry && now < cacheExpiry) {
+    return cachedRegistry;
+  }
+
+  // Fetch from database
+  const rolesFromDB = await repository.getAllActiveRoles();
+
+  // Transform to RoleDefinition format
+  const roleDefinition: Record<string, readonly string[]> = {};
+  for (const role of rolesFromDB) {
+    roleDefinition[role.name] = role.permissions;
+  }
+
+  // Create registry
+  cachedRegistry = defineRoles(roleDefinition);
+  cacheExpiry = now + CACHE_TTL;
+
+  return cachedRegistry;
+}
+
+// Force refresh (call when admin updates roles)
+export function invalidateRoleCache(): void {
+  cachedRegistry = null;
+  cacheExpiry = 0;
+}
+```
+
+#### Backend: Using Dynamic Roles in Express
+
+```typescript
+// server.ts
+import express from "express";
+import { canUser } from "secure-role-guard/core";
+import {
+  getDynamicRoleRegistry,
+  invalidateRoleCache,
+} from "./lib/dynamic-roles";
+
+const app = express();
+const roleRepository = new MongoRoleRepository(); // or PostgresRoleRepository
+
+// Middleware to attach registry to request
+app.use(async (req, res, next) => {
+  try {
+    req.roleRegistry = await getDynamicRoleRegistry(roleRepository);
+    next();
+  } catch (error) {
+    console.error("Failed to load roles:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Protected routes using dynamic roles
+app.get("/api/employees", async (req, res) => {
+  if (!canUser(req.user, "employee.read", req.roleRegistry)) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
+  const employees = await db.employees.findAll();
+  res.json(employees);
+});
+
+// Admin creates a new role
+app.post("/api/admin/roles", async (req, res) => {
+  if (!canUser(req.user, "role.create", req.roleRegistry)) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
+  const { name, permissions } = req.body;
+
+  // Save to database
+  await RoleModel.create({ name, permissions, is_active: true });
+
+  // Invalidate cache so new role is available
+  invalidateRoleCache();
+
+  res.json({ success: true });
+});
+
+app.listen(3000);
+```
+
+#### Frontend: Using Dynamic Roles
+
+```typescript
+// lib/auth-context.tsx
+"use client";
+
+import { createContext, useContext, useEffect, useState } from "react";
+import {
+  PermissionProvider,
+  RoleRegistry,
+  defineRoles,
+} from "secure-role-guard/react";
+
+interface User {
+  id: string;
+  email: string;
+  roles: string[];
+  permissions: string[];
+}
+
+interface AuthContextValue {
+  user: User | null;
+  isLoading: boolean;
+}
+
+const AuthContext = createContext<AuthContextValue>({
+  user: null,
+  isLoading: true,
+});
+
+export function DynamicAuthProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [user, setUser] = useState<User | null>(null);
+  const [roleRegistry, setRoleRegistry] = useState<RoleRegistry | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadUserAndRoles() {
+      try {
+        // Fetch current user
+        const userRes = await fetch("/api/auth/me");
+        const userData = await userRes.json();
+
+        if (!userData.user) {
+          setIsLoading(false);
+          return;
+        }
+
+        // Fetch dynamic roles from backend
+        const rolesRes = await fetch("/api/auth/roles");
+        const rolesData = await rolesRes.json();
+
+        // Create registry from dynamic roles
+        // rolesData format: { admin: ['user.read', ...], manager: [...] }
+        const registry = defineRoles(rolesData.roles);
+
+        setUser(userData.user);
+        setRoleRegistry(registry);
+      } catch (error) {
+        console.error("Failed to load auth:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadUserAndRoles();
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!roleRegistry) {
+    return <div>Failed to load permissions</div>;
+  }
+
+  return (
+    <AuthContext.Provider value={{ user, isLoading }}>
+      <PermissionProvider user={user} registry={roleRegistry}>
+        {children}
+      </PermissionProvider>
+    </AuthContext.Provider>
+  );
+}
+
+// -------------------------------------------------------
+// API Route: Return roles for frontend
+// app/api/auth/roles/route.ts
+
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  // Fetch roles from database
+  const roles = await RoleModel.find({ is_active: true }).lean();
+
+  // Transform to { roleName: permissions[] } format
+  const roleMap: Record<string, string[]> = {};
+  for (const role of roles) {
+    roleMap[role.name] = role.permissions;
+  }
+
+  return NextResponse.json({ roles: roleMap });
+}
+
+// -------------------------------------------------------
+// Usage in Components (same as fixed roles!)
+
+import { Can, useCan } from "secure-role-guard/react";
+
+function EmployeeDashboard() {
+  const canApproveLeave = useCan("leave.approve");
+
+  return (
+    <div>
+      <Can permission="employee.read">
+        <EmployeeList />
+      </Can>
+
+      <Can permission="employee.create">
+        <AddEmployeeButton />
+      </Can>
+
+      {canApproveLeave && <LeaveApprovalQueue />}
+    </div>
+  );
+}
+```
+
+---
+
+### Comparison: Fixed vs Dynamic
+
+| Feature                 | Fixed Roles           | Dynamic Roles                |
+| ----------------------- | --------------------- | ---------------------------- |
+| **Setup Complexity**    | Simple                | More complex                 |
+| **Runtime Performance** | Faster (no DB query)  | Slight overhead (cached)     |
+| **Flexibility**         | Limited               | Full flexibility             |
+| **Admin Control**       | Code changes required | UI-based role management     |
+| **Use Case**            | Simple apps, MVPs     | Enterprise, SaaS             |
+| **Role Changes**        | Deploy required       | Instant (cache invalidation) |
+
+### Key Points
+
+1. **Package is database-agnostic** - You fetch data, we check permissions
+2. **Same API for both approaches** - `canUser()`, `<Can>`, `useCan()` work identically
+3. **Frontend mirrors backend** - Keep role definitions in sync
+4. **Always validate on backend** - Frontend is for UX, backend is for security
 
 ---
 

@@ -5,6 +5,7 @@
 [![npm version](https://img.shields.io/npm/v/secure-role-guard.svg)](https://www.npmjs.com/package/secure-role-guard)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](https://www.npmjs.com/package/secure-role-guard)
+[![Tests & CI](https://img.shields.io/github/actions/workflow/status/Sohel-Rahaman-Developer/secure-role-guard/ci.yml?label=tests)](https://github.com/Sohel-Rahaman-Developer/secure-role-guard/actions)
 
 **Author:** Sohel Rahaman
 
@@ -154,7 +155,7 @@ app.get(
   requirePermission("user.read", roleRegistry),
   (req, res) => {
     res.json({ users: [] });
-  }
+  },
 );
 
 app.post(
@@ -162,7 +163,7 @@ app.post(
   requirePermission("user.create", roleRegistry),
   (req, res) => {
     res.json({ created: true });
-  }
+  },
 );
 
 app.delete(
@@ -170,7 +171,7 @@ app.delete(
   requirePermission("user.delete", roleRegistry),
   (req, res) => {
     res.json({ deleted: true });
-  }
+  },
 );
 ```
 

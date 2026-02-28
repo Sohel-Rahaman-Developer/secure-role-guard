@@ -39,7 +39,7 @@ export type ExpressNextFunction = (error?: unknown) => void;
 export type ExpressMiddleware = (
   req: ExpressRequest,
   res: ExpressResponse,
-  next: ExpressNextFunction
+  next: ExpressNextFunction,
 ) => void;
 
 /**
@@ -87,7 +87,7 @@ const DEFAULT_OPTIONS: Required<PermissionMiddlewareOptions> = {
 export function requirePermission(
   permission: string,
   registry: RoleRegistry,
-  options: PermissionMiddlewareOptions = {}
+  options: PermissionMiddlewareOptions = {},
 ): ExpressMiddleware {
   const opts = { ...DEFAULT_OPTIONS, ...options };
 
@@ -122,7 +122,7 @@ export function requirePermission(
 export function requireAllPermissions(
   permissions: readonly string[],
   registry: RoleRegistry,
-  options: PermissionMiddlewareOptions = {}
+  options: PermissionMiddlewareOptions = {},
 ): ExpressMiddleware {
   const opts = { ...DEFAULT_OPTIONS, ...options };
 
@@ -157,7 +157,7 @@ export function requireAllPermissions(
 export function requireAnyPermission(
   permissions: readonly string[],
   registry: RoleRegistry,
-  options: PermissionMiddlewareOptions = {}
+  options: PermissionMiddlewareOptions = {},
 ): ExpressMiddleware {
   const opts = { ...DEFAULT_OPTIONS, ...options };
 

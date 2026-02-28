@@ -19,7 +19,7 @@ const WILDCARD_PERMISSION = "*";
  */
 function collectUserPermissions(
   user: UserContext,
-  registry: RoleRegistry
+  registry: RoleRegistry,
 ): ReadonlySet<string> {
   const permissions = new Set<string>();
 
@@ -56,7 +56,7 @@ function collectUserPermissions(
  */
 function hasWildcardAccess(
   permissions: ReadonlySet<string>,
-  requested: string
+  requested: string,
 ): boolean {
   // Check for global wildcard
   if (permissions.has(WILDCARD_PERMISSION)) {
@@ -99,7 +99,7 @@ function hasWildcardAccess(
 export function canUser(
   user: UserContext | null | undefined,
   permission: string,
-  registry: RoleRegistry
+  registry: RoleRegistry,
 ): boolean {
   // DENY BY DEFAULT: No user context means no access
   if (user === null || user === undefined) {
@@ -141,7 +141,7 @@ export function canUser(
 export function canUserAll(
   user: UserContext | null | undefined,
   permissions: readonly string[],
-  registry: RoleRegistry
+  registry: RoleRegistry,
 ): boolean {
   // DENY BY DEFAULT: Empty permissions array
   if (permissions.length === 0) {
@@ -171,7 +171,7 @@ export function canUserAll(
 export function canUserAny(
   user: UserContext | null | undefined,
   permissions: readonly string[],
-  registry: RoleRegistry
+  registry: RoleRegistry,
 ): boolean {
   // DENY BY DEFAULT: Empty permissions array
   if (permissions.length === 0) {
@@ -199,7 +199,7 @@ export function canUserAny(
 export function checkPermission(
   user: UserContext | null | undefined,
   permission: string,
-  registry: RoleRegistry
+  registry: RoleRegistry,
 ): PermissionCheckResult {
   if (user === null || user === undefined) {
     return Object.freeze({

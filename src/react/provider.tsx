@@ -63,7 +63,7 @@ export function PermissionProvider({
       canAny: (permissions: readonly string[]) =>
         canUserAny(user, permissions, registry),
     }),
-    [user, registry]
+    [user, registry],
   );
 
   return (

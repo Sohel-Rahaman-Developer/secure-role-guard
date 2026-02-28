@@ -43,7 +43,7 @@ export type PermissionResult = {
 export type NextPermissionOptions = {
   /** Function to extract user context from request */
   readonly getUser: (
-    request: NextRequest
+    request: NextRequest,
   ) => UserContext | null | Promise<UserContext | null>;
   /** HTTP status code on denial (default: 403) */
   readonly statusCode?: number;
@@ -84,7 +84,7 @@ export type NextPermissionOptions = {
 export function checkNextPermission(
   user: UserContext | null | undefined,
   permission: string,
-  registry: RoleRegistry
+  registry: RoleRegistry,
 ): PermissionResult {
   return {
     allowed: canUser(user, permission, registry),
@@ -103,7 +103,7 @@ export function checkNextPermission(
 export function checkNextPermissionAll(
   user: UserContext | null | undefined,
   permissions: readonly string[],
-  registry: RoleRegistry
+  registry: RoleRegistry,
 ): PermissionResult {
   return {
     allowed: canUserAll(user, permissions, registry),
@@ -122,7 +122,7 @@ export function checkNextPermissionAll(
 export function checkNextPermissionAny(
   user: UserContext | null | undefined,
   permissions: readonly string[],
-  registry: RoleRegistry
+  registry: RoleRegistry,
 ): PermissionResult {
   return {
     allowed: canUserAny(user, permissions, registry),
@@ -166,7 +166,7 @@ export function withPermission<T extends NextRequest>(
   permission: string,
   registry: RoleRegistry,
   options: NextPermissionOptions,
-  handler: (request: T, user: UserContext) => Response | Promise<Response>
+  handler: (request: T, user: UserContext) => Response | Promise<Response>,
 ): (request: T) => Promise<Response> {
   const statusCode = options.statusCode ?? 403;
   const message = options.message ?? "Forbidden";
@@ -189,7 +189,7 @@ export function withAllPermissions<T extends NextRequest>(
   permissions: readonly string[],
   registry: RoleRegistry,
   options: NextPermissionOptions,
-  handler: (request: T, user: UserContext) => Response | Promise<Response>
+  handler: (request: T, user: UserContext) => Response | Promise<Response>,
 ): (request: T) => Promise<Response> {
   const statusCode = options.statusCode ?? 403;
   const message = options.message ?? "Forbidden";
@@ -212,7 +212,7 @@ export function withAnyPermission<T extends NextRequest>(
   permissions: readonly string[],
   registry: RoleRegistry,
   options: NextPermissionOptions,
-  handler: (request: T, user: UserContext) => Response | Promise<Response>
+  handler: (request: T, user: UserContext) => Response | Promise<Response>,
 ): (request: T) => Promise<Response> {
   const statusCode = options.statusCode ?? 403;
   const message = options.message ?? "Forbidden";

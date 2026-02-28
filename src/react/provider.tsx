@@ -51,7 +51,7 @@ export function PermissionProvider({
   user,
   registry,
   children,
-}: PermissionProviderProps): ReactNode {
+}: PermissionProviderProps) {
   // Memoize context value to prevent unnecessary re-renders
   const contextValue = useMemo<PermissionContextValue>(
     () => ({

@@ -63,21 +63,21 @@ export function Can({
   anyOf = false,
   children,
   fallback = null,
-}: CanProps): ReactNode {
+}: CanProps) {
   // Single permission check
   if (permission !== undefined) {
     const allowed = useCan(permission);
-    return allowed ? children : fallback;
+    return <>{allowed ? children : fallback}</>;
   }
 
   // Multiple permissions check
   if (permissions !== undefined && permissions.length > 0) {
     const allowed = anyOf ? useCanAny(permissions) : useCanAll(permissions);
-    return allowed ? children : fallback;
+    return <>{allowed ? children : fallback}</>;
   }
 
   // No permissions specified - deny by default
-  return fallback;
+  return <>{fallback}</>;
 }
 
 /**
@@ -110,19 +110,19 @@ export function Cannot({
   permissions,
   anyOf = false,
   children,
-}: CannotProps): ReactNode {
+}: CannotProps) {
   // Single permission check
   if (permission !== undefined) {
     const allowed = useCan(permission);
-    return allowed ? null : children;
+    return <>{allowed ? null : children}</>;
   }
 
   // Multiple permissions check
   if (permissions !== undefined && permissions.length > 0) {
     const allowed = anyOf ? useCanAny(permissions) : useCanAll(permissions);
-    return allowed ? null : children;
+    return <>{allowed ? null : children}</>;
   }
 
   // No permissions specified - show children (inverse of deny by default)
-  return children;
+  return <>{children}</>;
 }

@@ -85,7 +85,7 @@ describe("Express Adapter", () => {
         ["admin.access", "post.read"],
         registry,
       );
-      const req: ExpressRequest = { user: { id: "1", roles: ["user"] } };
+      const req: ExpressRequest = { user: { userId: "1", roles: ["user"] } };
       const res = mockResponse();
       const next: ExpressNextFunction = vi.fn();
 

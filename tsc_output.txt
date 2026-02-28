@@ -1,0 +1,77 @@
+﻿src/adapters/__tests__/express.test.ts(88,45): error TS2353: Object literal may only specify known properties, and 'id' does not exist in type 'UserContext'.
+src/react/__tests__/components.test.tsx(20,4): error TS2786: 'PermissionProvider' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/components.test.tsx(29,10): error TS2786: 'TestProvider' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/components.test.tsx(30,12): error TS2786: 'Can' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/components.test.tsx(40,10): error TS2786: 'TestProvider' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/components.test.tsx(41,12): error TS2786: 'Can' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/components.test.tsx(51,10): error TS2786: 'TestProvider' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/components.test.tsx(52,12): error TS2786: 'Can' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/components.test.tsx(66,10): error TS2786: 'TestProvider' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/components.test.tsx(67,12): error TS2786: 'Can' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/components.test.tsx(77,10): error TS2786: 'TestProvider' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/components.test.tsx(78,12): error TS2786: 'Can' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/components.test.tsx(90,10): error TS2786: 'TestProvider' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/components.test.tsx(91,12): error TS2786: 'Cannot' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/components.test.tsx(101,10): error TS2786: 'TestProvider' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/components.test.tsx(102,12): error TS2786: 'Cannot' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/hooks.test.tsx(20,4): error TS2786: 'PermissionProvider' cannot be used as a JSX component.
+  Its return type 'ReactNode' is not a valid JSX element.
+    Type 'undefined' is not assignable to type 'Element | null'.
+src/react/__tests__/hooks.test.tsx(30,67): error TS2322: Type '({ children }: { children: ReactNode; }) => ReactNode' is not assignable to type 'JSXElementConstructor<{ children: ReactNode; }> | undefined'.
+  Type '({ children }: { children: ReactNode; }) => ReactNode' is not assignable to type '(props: { children: ReactNode; }) => ReactElement<any, any> | null'.
+    Type 'ReactNode' is not assignable to type 'ReactElement<any, any> | null'.
+      Type 'undefined' is not assignable to type 'ReactElement<any, any> | null'.
+src/react/__tests__/hooks.test.tsx(35,67): error TS2322: Type '({ children }: { children: ReactNode; }) => ReactNode' is not assignable to type 'JSXElementConstructor<{ children: ReactNode; }> | undefined'.
+  Type '({ children }: { children: ReactNode; }) => ReactNode' is not assignable to type '(props: { children: ReactNode; }) => ReactElement<any, any> | null'.
+    Type 'ReactNode' is not assignable to type 'ReactElement<any, any> | null'.
+      Type 'undefined' is not assignable to type 'ReactElement<any, any> | null'.
+src/react/__tests__/hooks.test.tsx(42,9): error TS2322: Type '({ children }: { children: ReactNode; }) => ReactNode' is not assignable to type 'JSXElementConstructor<{ children: ReactNode; }> | undefined'.
+  Type '({ children }: { children: ReactNode; }) => ReactNode' is not assignable to type '(props: { children: ReactNode; }) => ReactElement<any, any> | null'.
+    Type 'ReactNode' is not assignable to type 'ReactElement<any, any> | null'.
+      Type 'undefined' is not assignable to type 'ReactElement<any, any> | null'.
+src/react/__tests__/hooks.test.tsx(50,9): error TS2322: Type '({ children }: { children: ReactNode; }) => ReactNode' is not assignable to type 'JSXElementConstructor<{ children: ReactNode; }> | undefined'.
+  Type '({ children }: { children: ReactNode; }) => ReactNode' is not assignable to type '(props: { children: ReactNode; }) => ReactElement<any, any> | null'.
+    Type 'ReactNode' is not assignable to type 'ReactElement<any, any> | null'.
+      Type 'undefined' is not assignable to type 'ReactElement<any, any> | null'.
+src/react/__tests__/hooks.test.tsx(58,9): error TS2322: Type '({ children }: { children: ReactNode; }) => ReactNode' is not assignable to type 'JSXElementConstructor<{ children: ReactNode; }> | undefined'.
+  Type '({ children }: { children: ReactNode; }) => ReactNode' is not assignable to type '(props: { children: ReactNode; }) => ReactElement<any, any> | null'.
+    Type 'ReactNode' is not assignable to type 'ReactElement<any, any> | null'.
+      Type 'undefined' is not assignable to type 'ReactElement<any, any> | null'.
+src/react/__tests__/hooks.test.tsx(64,61): error TS2322: Type '({ children }: { children: ReactNode; }) => ReactNode' is not assignable to type 'JSXElementConstructor<{ children: ReactNode; }> | undefined'.
+  Type '({ children }: { children: ReactNode; }) => ReactNode' is not assignable to type '(props: { children: ReactNode; }) => ReactElement<any, any> | null'.
+    Type 'ReactNode' is not assignable to type 'ReactElement<any, any> | null'.
+      Type 'undefined' is not assignable to type 'ReactElement<any, any> | null'.
+src/react/__tests__/hooks.test.tsx(71,54): error TS2322: Type '({ children }: { children: ReactNode; }) => ReactNode' is not assignable to type 'JSXElementConstructor<{ children: ReactNode; }> | undefined'.
+  Type '({ children }: { children: ReactNode; }) => ReactNode' is not assignable to type '(props: { children: ReactNode; }) => ReactElement<any, any> | null'.
+    Type 'ReactNode' is not assignable to type 'ReactElement<any, any> | null'.
+      Type 'undefined' is not assignable to type 'ReactElement<any, any> | null'.

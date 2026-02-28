@@ -16,7 +16,7 @@ const registry = defineRoles({
   user: ["profile.view", "profile.edit"],
 });
 
-const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
+const wrapper = ({ children }: { children: ReactNode }) => (
   <PermissionProvider
     user={{ userId: "1", roles: ["user"] }}
     registry={registry}

@@ -16,7 +16,7 @@ const TestProvider = ({
 }: {
   children: ReactNode;
   roles?: string[];
-}): ReactNode => (
+}) => (
   <PermissionProvider user={{ userId: "1", roles }} registry={registry}>
     {children}
   </PermissionProvider>
